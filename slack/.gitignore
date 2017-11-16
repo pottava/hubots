@@ -1,0 +1,9 @@
+bin/
+node_modules/
+.editor*
+.hubot*
+external*
+hubot*
+package*
+Proc*
+README*
