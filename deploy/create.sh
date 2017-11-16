@@ -33,10 +33,17 @@ KEY_PAIR:      ${KEYPAIR_NAME}
 
 EOT
 
+# Create a docker repository
+aws --region ${aws_region} ecr create-repository --repository-name hubot
+
+# Replace environment variables
 \cp -f deploy/aws-cfn.yaml.template deploy/aws-cfn.yaml
+sed -i -e 's/@token/token/g' deploy/aws-cfn.yaml
+sed -i -e 's/@team/team/g' deploy/aws-cfn.yaml
+sed -i -e 's/@hubot/hubot/g' deploy/aws-cfn.yaml
 
 # Upload templates to S3
-aws s3 sync deploy/ s3://${S3_BUCKET_NAME}/ --delete --exclude "*.sh"
+aws --region ${aws_region} s3 sync deploy/ s3://${S3_BUCKET_NAME}/ --delete --exclude "*.sh"
 
 echo 'Creating a CloudFormation stack...'
 aws cloudformation create-stack \
@@ -54,7 +61,7 @@ fi
 
 # Will wait for the stack to be provisioned successfully
 echo 'Waiting for the stack to be created, this may take a few minutes...'
-aws cloudformation wait stack-create-complete --stack-name ${STACK_NAME}
+aws --region ${aws_region} cloudformation wait stack-create-complete --stack-name ${STACK_NAME}
 
 result=$(echo $?)
 exit ${result}

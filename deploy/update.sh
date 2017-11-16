@@ -46,7 +46,7 @@ docker_image_tag=$( date +%Y%m%d%h%M )
 docker build -t ${ecr_registory}/hubot:${docker_image_tag} .
 
 # Docker login & push the docker image
-aws ecr get-login --no-include-email | sh -
+aws --region ${aws_region} ecr get-login --no-include-email | sh -
 docker push ${ecr_registory}/hubot:${docker_image_tag}
 
 # Replace the docker image
@@ -58,7 +58,7 @@ sed -i -e 's/@team/'${HUBOT_SLACK_TEAM}'/g' deploy/aws-cfn.yaml
 sed -i -e 's/@hubot/'${hubot_name}'/g' deploy/aws-cfn.yaml
 
 # Upload templates to S3
-aws s3 sync deploy/ s3://${S3_BUCKET_NAME}/ --delete --exclude "*.sh"
+aws --region ${aws_region} s3 sync deploy/ s3://${S3_BUCKET_NAME}/ --delete --exclude "*.sh"
 
 echo 'Updating a specified CloudFormation stack...'
 aws cloudformation update-stack \
@@ -76,7 +76,7 @@ fi
 
 # Will wait for the stack to be provisioned successfully
 echo 'Waiting for the stack to be updated, this may take a few minutes...'
-aws cloudformation wait stack-update-complete --stack-name ${STACK_NAME}
+aws --region ${aws_region} cloudformation wait stack-update-complete --stack-name ${STACK_NAME}
 
 result=$(echo $?)
 exit ${result}
