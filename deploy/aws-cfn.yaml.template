@@ -290,6 +290,21 @@ Resources:
   Cluster:
     Type: AWS::ECS::Cluster
 
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref Cluster
+      TaskDefinition: !Ref Task
+      DesiredCount: 1
+      DeploymentConfiguration:
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
+      PlacementStrategies:
+        - Type: spread
+          Field: attribute:ecs.availability-zone
+        - Type: spread
+          Field: instanceId
+
   TaskRole:
     Type: AWS::IAM::Role
     Properties:
