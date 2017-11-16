@@ -1,1 +1,2 @@
-tmp
+aws-cfn.yaml*
+!aws-cfn.yaml.template
