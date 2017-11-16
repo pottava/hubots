@@ -5,9 +5,6 @@ FROM node:9.2.0-alpine
 
 RUN apk --no-cache add tini ca-certificates
 
-RUN addgroup worker && adduser -s /bin/bash -D -G worker worker
-USER worker
-
 WORKDIR /app
 
 ENTRYPOINT ["/sbin/tini", "--"]
